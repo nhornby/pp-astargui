@@ -33,7 +33,7 @@ class Node:
 
 def astar_search(matrix, start, end):
     if matrix[start[0]][start[1]] == 1:
-        return []
+        return ([], [])
 
     start_node = Node(start, None)
     end_node = Node(end, None)
@@ -66,7 +66,10 @@ def astar_search(matrix, start, end):
                     path.append(child.pos)
                     child = child.parent
                 path.append(start)
-                return path
+                examined = []
+                for n in closed_list:
+                    examined.append(n.pos)
+                return (path, examined)
 
             # If it's in the closed list, skip it
             if child in closed_list:
@@ -86,4 +89,7 @@ def astar_search(matrix, start, end):
                     skip = True
             if not skip:
                 open_list.append(child)
-    return []
+    examined = []
+    for n in closed_list:
+        examined.append(n.pos)
+    return ([],examined)

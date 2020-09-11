@@ -5,6 +5,7 @@ from astar import astar_search
 DARK_GRAY = (125, 125, 125)
 WHITE = (255, 255, 255)
 COLOR = (125, 225, 175)
+LIGHTCOLOR = (255, 180, 180)
 GRAY = (230, 230, 230)
 
 # Constants
@@ -33,7 +34,7 @@ class Grid:
 # REQUIRES: grid is a valid object of the Grid class, path is a list of (r, c) coordinates
 # MODIFIES: screen
 # EFFECTS: redraws the screen with new grid and path
-def update_screen(screen, grid, path):
+def update_screen(screen, grid, path, closed):
     screen.fill(GRAY)
 
     for r in range(grid.size):
@@ -41,6 +42,13 @@ def update_screen(screen, grid, path):
             color = WHITE
             if grid.matrix[r][c] == 1:
                 color = DARK_GRAY
+
+            for coord in closed:
+                count = 0
+                if coord == (r, c):
+                    count += 1
+                    color = LIGHTCOLOR
+                    continue
 
             for coord in path:
                 if coord == (r, c):
@@ -103,7 +111,7 @@ def main():
 
     # Initialize a standard grid and path
     grid = Grid(SIZE)
-    path = update_path(grid)
+    (path, closed) = update_path(grid)
 
     # Game loop
     running = True
@@ -126,13 +134,13 @@ def main():
 
         if left_click:
             update_tile(grid)
-            path = update_path(grid)
+            (path, closed) = update_path(grid)
         elif right_click:
             update_start_end(grid)
-            path = update_path(grid)
+            (path, closed) = update_path(grid)
 
         # Draw and update the screen
-        update_screen(screen, grid, path)
+        update_screen(screen, grid, path, closed)
         pygame.display.flip()
 
     # Quit pygame
