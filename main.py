@@ -1,18 +1,20 @@
 import pygame
-from astar import astar_search
+from astar import astar
 
-# Colors
-DARK_GRAY = (125, 125, 125)
+# Base Colors
 WHITE = (255, 255, 255)
-COLOR = (125, 225, 175)
-LIGHTCOLOR = (255, 180, 180)
 GRAY = (230, 230, 230)
+
+# Main Colors
+DARK_GRAY = (125, 125, 125)
+PATH = (150, 150, 255)
+EXAMINED = (220, 220, 220)
 
 # Constants
 SCREEN_W = 700
 SCREEN_H = 700
 MARGIN = 1
-SIZE = 15
+SIZE = 23
 
 
 # POD class representing the grid
@@ -47,12 +49,12 @@ def update_screen(screen, grid, path, closed):
                 count = 0
                 if coord == (r, c):
                     count += 1
-                    color = LIGHTCOLOR
+                    color = EXAMINED
                     continue
 
             for coord in path:
                 if coord == (r, c):
-                    color = COLOR
+                    color = PATH
                     continue
 
             rect_x = (MARGIN + grid.tile_size) * c + MARGIN
@@ -65,7 +67,7 @@ def update_screen(screen, grid, path, closed):
 # MODIFIES: none
 # EFFECTS: returns a list of (r, c) coordinates from start to end
 def update_path(grid):
-    return astar_search(grid.matrix, grid.start, grid.end)
+    return astar(grid.matrix, grid.start, grid.end)
 
 
 # REQUIRES: grid is a valid object of the Grid class
@@ -111,9 +113,9 @@ def main():
 
     # Initialize a standard grid and path
     grid = Grid(SIZE)
-    (path, closed) = update_path(grid)
+    (path, examined) = update_path(grid)
 
-    # Game loop
+    # Display loop
     running = True
     left_click = False
     right_click = False
@@ -125,8 +127,9 @@ def main():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:  # Left Click
                     left_click = True
-                if event.button == 3:  # Right Click
+                elif event.button == 3:  # Right Click
                     right_click = True
+                break
             if event.type == pygame.MOUSEBUTTONUP:
                 left_click = False
                 right_click = False
@@ -134,13 +137,13 @@ def main():
 
         if left_click:
             update_tile(grid)
-            (path, closed) = update_path(grid)
+            (path, examined) = update_path(grid)
         elif right_click:
             update_start_end(grid)
-            (path, closed) = update_path(grid)
+            (path, examined) = update_path(grid)
 
         # Draw and update the screen
-        update_screen(screen, grid, path, closed)
+        update_screen(screen, grid, path, examined)
         pygame.display.flip()
 
     # Quit pygame
